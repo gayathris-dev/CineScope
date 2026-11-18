@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CineScope — An editorial movie discovery platform curated with real-time TMDB cinema archives, genre exploration, and personal collections.">
+  <title>CineScope — Cinematic Movie Discovery</title>
+  
+  <!-- Premium Editorial & Modern Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23c5a059%22>❖</text></svg>">
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div id="app" class="app-container">
+
+    <!-- Minimalist Editorial Navigation Bar -->
+    <header class="navbar" id="navbar">
+      <div class="nav-container">
+        
+        <!-- Brand Wordmark -->
+        <a href="#" class="brand-logo" id="brand-logo" aria-label="CineScope Home">
+          <span class="brand-symbol">❖</span>
+          <span class="brand-title">CINESCOPE</span>
+          <span class="brand-sub">CINEMA ARCHIVE</span>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="nav-links" id="nav-links">
+          <button class="nav-link active" data-view="home">
+            <span>Discover</span>
+          </button>
+          <button class="nav-link" data-view="trending" data-section="trending-section">
+            <span>Trending</span>
+          </button>
+          <button class="nav-link" data-view="popular" data-section="popular-section">
+            <span>Popular</span>
+          </button>
+          <button class="nav-link" data-view="top-rated" data-section="top-rated-section">
+            <span>Top Rated</span>
+          </button>
+          <button class="nav-link" data-view="upcoming" data-section="upcoming-section">
+            <span>Upcoming</span>
+          </button>
+          <button class="nav-link" data-view="genres" data-section="genres-section">
+            <span>Genres</span>
+          </button>
+          <button class="nav-link watchlist-nav-btn" data-view="watchlist">
+            <span>Watchlist</span>
+            <span class="watchlist-count-pill" id="watchlist-count-badge">0</span>
+          </button>
+        </nav>
+
+        <!-- Right Header Utilities: Search & Mobile Menu -->
+        <div class="nav-actions">
+          <div class="search-container">
+            <form id="search-form" class="search-form" role="search">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input 
+                  type="text" 
+                  id="search-input" 
+                  class="search-input" 
+                  placeholder="Search cinema..." 
+                  autocomplete="off"
+                  aria-label="Search movies by title"
+                >
+                <div class="search-spinner" id="search-spinner" aria-hidden="true"></div>
+                <button type="button" class="search-clear-btn" id="search-clear-btn" aria-label="Clear search" title="Clear search">
+                  &times;
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Mobile Menu Toggle Button -->
+          <button class="mobile-toggle-btn" id="mobile-toggle-btn" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-nav-link active" data-view="home">Discover</button>
+        <button class="mobile-nav-link" data-view="trending" data-section="trending-section">Trending</button>
+        <button class="mobile-nav-link" data-view="popular" data-section="popular-section">Popular</button>
+        <button class="mobile-nav-link" data-view="top-rated" data-section="top-rated-section">Top Rated</button>
+        <button class="mobile-nav-link" data-view="upcoming" data-section="upcoming-section">Upcoming</button>
+        <button class="mobile-nav-link" data-view="genres" data-section="genres-section">Genres</button>
+        <button class="mobile-nav-link" data-view="watchlist">
+          Watchlist (<span id="mobile-watchlist-count">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <!-- TMDB Key Status Banner (Appears if key is missing) -->
+    <div id="api-key-banner" class="api-key-banner hidden">
+      <div class="banner-content">
+        <div class="banner-text">
+          <span class="banner-alert-pill">Notice</span>
+          <strong>TMDB API Key Required:</strong> To fetch real-time cinema archives, configure your <code>TMDB_API_KEY</code> in <code>.env</code> and restart the server.
+        </div>
+        <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline banner-btn">
+          Obtain Key &rarr;
+        </a>
+        <button id="banner-close-btn" class="banner-close" aria-label="Close banner">&times;</button>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="main-content">
+
+      <!-- ================= HERO SHOWCASE ================= -->
+      <section class="hero-section" id="hero-section">
+        <div class="hero-backdrop" id="hero-backdrop"></div>
+        <div class="hero-vignette-left"></div>
+        <div class="hero-vignette-bottom"></div>
+        
+        <div class="hero-container">
+          <div class="hero-content" id="hero-content">
+            <!-- Hero content rendered dynamically via JS -->
+            <div class="hero-skeleton">
+              <div class="skeleton skeleton-tag"></div>
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-meta"></div>
+              <div class="skeleton skeleton-desc"></div>
+              <div class="skeleton skeleton-actions"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SEARCH RESULTS VIEW ================= -->
+      <section class="section search-results-section hidden" id="search-results-section">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">ARCHIVE SEARCH</div>
+              <h2 class="section-heading">
+                Results for <span class="search-highlight" id="search-query-display">""</span>
+              </h2>
+            </div>
+            <button class="btn btn-outline btn-sm" id="close-search-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+              Return to Catalog
+            </button>
+          </div>
+          <div class="movie-grid" id="search-movie-grid"></div>
+        </div>
+      </section>
+
+      <!-- ================= WATCHLIST VIEW ================= -->
+      <section class="section watchlist-section hidden" id="watchlist-section">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">PERSONAL CURATION</div>
+              <h2 class="section-heading">My Watchlist</h2>
+            </div>
+            <div class="section-actions">
+              <span class="watchlist-total" id="watchlist-total-count">0 titles saved</span>
+              <button class="btn btn-crimson-subtle btn-sm" id="clear-watchlist-btn" style="display: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                Clear Collection
+              </button>
+            </div>
+          </div>
+          <div class="movie-grid" id="watchlist-movie-grid"></div>
+        </div>
+      </section>
+
+      <!-- ================= GENRE FILTER BAR & VIEW ================= -->
+      <section class="section genres-section" id="genres-section">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <div class="section-kicker">EXPLORATION</div>
+              <h2 class="section-heading">Browse by Genre</h2>
+            </div>
+          </div>
+          
+          <div class="genre-pills-container" id="genre-pills">
+            <!-- Genre pills rendered dynamically -->
+            <div class="skeleton skeleton-pill"></div>
+            <div class="skeleton skeleton-pill"></div>
+            <div class="skeleton skeleton-pill"></div>
+            <div class="skeleton skeleton-pill"></div>
+          </div>
+
+          <!-- Genre Filtered Movies Grid (shown when genre selected) -->
+          <div class="genre-movies-wrapper hidden" id="genre-movies-wrapper">
+            <div class="genre-header-meta">
+              <h3 class="genre-active-title" id="genre-active-title">Action Cinema</h3>
+              <button class="btn btn-outline btn-sm" id="reset-genre-btn">Show All Sections &times;</button>
+            </div>
+            <div class="movie-grid" id="genre-movie-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= HOME SECTIONS ================= -->
+      <div id="home-sections">
+
+        <!-- 1. TRENDING CAROUSEL SECTION (Apple TV / Letterboxd style) -->
+        <section class="section trending-section" id="trending-section">
+          <div class="section-container">
+            <div class="section-header">
+              <div>
+                <div class="section-kicker">01 / WHAT'S BUZZING</div>
+                <h2 class="section-heading">Trending Cinema</h2>
+              </div>
+              <div class="section-controls">
+                <div class="toggle-tabs" role="tablist">
+                  <button class="toggle-tab active" data-time-window="day">Today</button>
+                  <button class="toggle-tab" data-time-window="week">This Week</button>
+                </div>
+                <div class="carousel-nav-arrows">
+                  <button class="carousel-arrow-btn" id="trending-carousel-prev" aria-label="Previous trending movies">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <button class="carousel-arrow-btn" id="trending-carousel-next" aria-label="Next trending movies">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Horizontal Poster Carousel Track -->
+            <div class="carousel-container">
+              <div class="carousel-track" id="trending-movie-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. POPULAR MOVIES SECTION -->
+        <section class="section" id="popular-section">
+          <div class="section-container">
+            <div class="section-header">
+              <div>
+                <div class="section-kicker">02 / AUDIENCE ACCLAIM</div>
+                <h2 class="section-heading">Popular Films</h2>
+              </div>
+            </div>
+            <div class="movie-grid" id="popular-movie-grid"></div>
+          </div>
+        </section>
+
+        <!-- 3. TOP RATED MOVIES SECTION -->
+        <section class="section" id="top-rated-section">
+          <div class="section-container">
+            <div class="section-header">
+              <div>
+                <div class="section-kicker">03 / MASTERPIECES</div>
+                <h2 class="section-heading">Top Rated Cinema</h2>
+              </div>
+            </div>
+            <div class="movie-grid" id="top-rated-movie-grid"></div>
+          </div>
+        </section>
+
+        <!-- 4. UPCOMING MOVIES SECTION -->
+        <section class="section" id="upcoming-section">
+          <div class="section-container">
+            <div class="section-header">
+              <div>
+                <div class="section-kicker">04 / COMING SOON</div>
+                <h2 class="section-heading">Upcoming Releases</h2>
+              </div>
+            </div>
+            <div class="movie-grid" id="upcoming-movie-grid"></div>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+
+    <!-- Editorial Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <span class="brand-symbol">❖</span>
+            <span class="brand-title">CINESCOPE</span>
+          </div>
+          <p class="footer-desc">
+            An editorial cinema discovery archive blending cinematic storytelling with real-time film data from The Movie Database (TMDB).
+          </p>
+        </div>
+
+        <div class="footer-links-group">
+          <h4 class="footer-heading">Catalogue</h4>
+          <ul>
+            <li><a href="#" data-footer-view="trending">Trending Cinema</a></li>
+            <li><a href="#" data-footer-view="popular">Popular Titles</a></li>
+            <li><a href="#" data-footer-view="top-rated">Critically Acclaimed</a></li>
+            <li><a href="#" data-footer-view="upcoming">Upcoming Premieres</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-group">
+          <h4 class="footer-heading">Curation</h4>
+          <ul>
+            <li><a href="#" data-footer-view="genres">Genre Directory</a></li>
+            <li><a href="#" data-footer-view="watchlist">Personal Watchlist</a></li>
+            <li><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDB REST Protocol</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-attribution">
+          <h4 class="footer-heading">Attribution</h4>
+          <p>This product utilizes the TMDB API but is not certified or endorsed by TMDB.</p>
+          <div class="tmdb-badge">
+            <span class="tmdb-pill">TMDB API v3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> CineScope. Designed with bespoke typography, pure vanilla JavaScript, and Express.</p>
+      </div>
+    </footer>
+
+    <!-- ================= MOVIE DETAILS MODAL ================= -->
+    <div class="modal-backdrop" id="movie-modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal-wrapper">
+        <div class="modal-card" id="modal-card">
+          <button class="modal-close-btn" id="modal-close-btn" aria-label="Close details">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          
+          <div class="modal-body" id="modal-body">
+            <!-- Modal content rendered dynamically via JS -->
+            <div class="modal-loading-spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TRAILER VIDEO MODAL ================= -->
+    <div class="trailer-modal-backdrop" id="trailer-modal" aria-hidden="true">
+      <div class="trailer-modal-container">
+        <button class="trailer-close-btn" id="trailer-close-btn" aria-label="Close trailer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="trailer-video-wrapper" id="trailer-video-wrapper">
+          <!-- YouTube IFrame inserted dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TOAST NOTIFICATION ================= -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/watchlist.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
